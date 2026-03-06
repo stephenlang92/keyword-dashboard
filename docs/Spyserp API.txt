@@ -1,0 +1,2302 @@
+Open API SpySerp.com
+General Principles
+SpySERP's open API is available at the next link: https://spyserp.com/panel/api. If description does not specify the use of “POST”, then the query parameters could be referred through the method “GET”.
+
+SpySERP's open API is only available to workspaces with an active paid subscription or with an active prepaid plan
+
+Using the “POST” method, all the arrays of parameters should be in json. Using any method call, the server transfer all the data in JSON-format. The call should transfer “GET”-parameter token with an access token received from the user profile page.
+
+Using the “GET” method, API call method name is appended after the API link, for example: https://spyserp.com/panel/api/keywords. Transferring manner for the “GET”-parameters doesn’t matter. If the response code wouldn’t be 200 as a result of the processing request, then the error text will be displayed at the status_msg field.
+
+If under the method call server transfer a data set by pages, then the parameters for such method may be page and pageSize (the number of elements on the page). A server transfer the array contains all the data for the current page in the element with items key. totalCount and page elements contains the whole number of the current elements and current page, respectively.
+
+If the parameter description doesn’t contain the direct reference that this parameter is required, then there is no need to transfer it to the query (the default will be used).
+
+The number of requests that can be sent to the SpySERP API is limited to 50 per 10 seconds. If this limit is exceeded, the server will return a 429 status code and status_msg: Rate limit exceeded.
+
+Common methods
+searchEngines
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"searchEngines",
+    "withSettingValues":1
+}
+Response example:
+
+{
+    "1": {
+        "id": 1,
+        "name": "Google",
+        "url": "google.com",
+        "type": "SE::Google",
+        "editable_settings": {
+            "google_domains": {
+                "result_key": "domain",
+                "label": "Domain",
+                "value": "www.google.com"
+            },
+            ...
+        },
+        "setting_values": {
+            "google_domains": {
+                "values": {
+                    "www.google.com": "www.google.com",
+                    ...
+                 },
+                "long": 0
+            },
+            ...
+        },
+Make sure you replace "yourApiKey" with your API token!
+
+List of all active SE SpySerp with Parameters
+
+Request Parameters:
+Parameter	Description
+withSettingValues	0 by default. If withSettingValues = 1, then array for each search engine transfer in the setting_values field the data for each setting. If the parameter long=1, then the data wouldn’t transferred, and you can receive it with the searchEnginesLoadSettings method.
+Response Parameters:
+Search engines IDs are the element keys in the arrays.
+
+Parameter	Description
+name	Search Engine name
+url	SE URL
+type	SE type (in the A-Parser)
+editable_settings	E editable settings
+setting_values	Optional. The values for each editable_settings settings, when long=0.
+searchEnginesLoadSettings
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"searchEnginesLoadSettings",
+    "key":"google_location",
+    "search":"Califo"
+}
+Response example:
+
+{
+  "California,Missouri,United States": "California, Missouri, United States",
+  "California,Maryland,United States": "California, Maryland, United States",
+    ...
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Value search for one parameter of the search engine
+
+Request Parameters:
+Parameter	Description
+key	(required). The setting for which values are derived for
+search	the search word for existing values of the parameter
+Exact user's methods
+balance
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"balance"
+}
+Response example:
+
+{
+    "rub": 1000,
+    "usd": 120
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Current user balance in all types of currencies
+
+projects
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projects"
+}
+Response example:
+
+{
+    "groups": {
+        "0": {
+            "groupTitle": "",
+            "projects": [
+                {
+                    "id": 21,
+                    "name": "My project",
+                    "created_at": 1468935137000,
+                    "disabled": 2,
+                    "domains": [
+                        {
+                            "title": "google.com",
+                            "domain_id": 1,
+                            "average": "0",
+                            "top3": "0",
+                            "top10": "0",
+                            "top30": "0",
+                            "up": "0",
+                            "down": "0",
+                            "middle": "0"
+                        },
+                        ...
+Make sure you replace "yourApiKey" with your API token!
+
+List of current user projects, divided by groups
+
+Response Parameters:
+Parameter	Description
+groups	projects group array. If the user didn’t create groups, all the projects placed in the default group with id=0
+groupTitle	Group title
+projects	projects group array
+name	project name
+created_at	project creation timestamp
+disabled	project status (disabled - 1, enabled - 2)
+domains	data set scan of the last processed project for each domain. Average - average position value, top3 - number of keywords in top-3, top-10 - number of keywords in top-10, up - number of keywords raised from the last check, down - number of keywords dropped down from the last check, middle - number of keywords with stable positions
+messages
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"messages"
+}
+Response example:
+
+{
+    "items": [
+        {
+            "id": 3802,
+            "type": 0,
+            "created_at": 1510115461,
+            "visited_at": 0,
+            "subject": "Project #1",
+            "content": "The parsing is complete"
+        },
+        ...
+    ],
+    "totalCount": 120,
+    "page": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+User messages`
+
+Request Parameters:
+Parameter	Description
+page	0 by default
+pageSize	20 by default, not more than 300
+Response Parameters:
+Parameter	Description
+items	messages array
+items.created_at	timestamp for created message
+items.visited_at	timestamp for viewed message
+items.subject	subject of message
+items.content	message text
+totalCount	total number of messages
+page	current page
+timeline
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"timeline"
+}
+Response example:
+
+{
+    "6923": {
+        "project_name": "My project",
+        "project_id": 467,
+        "id": 6923,
+        "data": {
+            "up": {
+                "google.com": 47
+            },
+            "vis": {
+                "google.com": 169
+            },
+            "down": {
+                "google.com": 83
+            },
+            "top3": {
+                "google.com": 2
+            },
+            "top10": {
+                "google.com": 11
+            },
+            "top30": {
+                "google.com": 97
+            },
+            "middle": {
+                "google.com": 39
+            },
+            "average": {
+                "google.com": "30"
+            }
+        },
+        "time_completed": 1508713648,
+        "schedule_domains": [
+            295
+        ]
+    },
+    ...
+Make sure you replace "yourApiKey" with your API token!
+
+List of the latest parsed reports for all user’s projects with the data set scan
+
+Response Parameters:
+The array with the projects id keys sorted by newest to oldest transferred from the server
+
+Parameter	Description
+project_name	project name
+project_id	project id
+data	data set scan divided by personal project domains. Average - average position value, top3 - number of keywords in top-3, top-10 - number of keywords in top-10, up - number of keywords raised from the last check, down - number of keywords dropped down from the last check, middle - number of keywords with stable positions
+time_completed	timestamp of the completed parsing process
+schedule_domains	set of domains for which statistical data was received
+package
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"package"
+}
+Response example:
+
+{
+    "package": "Expert",
+    "time_finish": "21.09.2025"
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Information about current user’s package
+
+Response Parameters:
+Parameter	Description
+package	package name
+time_finish	package expiring data
+project
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"project",
+    "project_id":1540,
+    "withSettingValues":1
+}
+Response example:
+
+{
+    "id": 21,
+    "name": "My project",
+    "created_at": 1468935137,
+    "disabled": 2,
+    "group_id": 0,
+    "check_type": 3,
+    "settings": {
+        "parsing_notification": {
+            "value": 0,
+            "title": "Parsing notification"
+        },
+        "parseAnchor": {
+            "value": 0,
+            "title": "Parse anchors and snippets"
+        }
+    }
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Check information for separate project
+
+Request Parameters:
+Parameter	Description
+project_id	(required). Project ID
+withSettings	if 1, then additional project settings will be transferred
+Response Parameters:
+Parameter	Description
+Name	project name
+Created_at	timestamp for creation date
+Disabled project status (1	disabled, 2
+Group_id	project group ID
+Check_type	type of data parsing (1
+Settings	(optional). Current project settings (parsing_notification
+projectCreate
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectCreate",
+    "name":"My new project",
+    "group_id":2
+}
+Response example:
+
+{
+    "success": true,
+    "project_id": 526
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Project Creation
+
+Request Parameters:
+Parameter	Description
+Name	(required). Project name
+Group_id	0 by default. Group ID for the project. If not specified or 0, then project doesn’t have any group
+Response Parameters:
+Parameter	Description
+project_id	New project ID
+existsId	If a project with the given name already exists, its ID is returned in this field
+projectDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDelete",
+    "project_id":526
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Project delete
+
+projectDisable
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDisable",
+    "project_id":7
+}
+Response example:
+
+{
+    "success": true,
+    "status": 1
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change project status - Active or not.
+
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+Response Parameters:
+Parameter	Description
+status	current project status (1 - active, 2 - not active)
+projectGroupChange
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDisable",
+    "project_id":7,
+    "group_id":9
+}
+Response example:
+
+{
+    "success": true,
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change project group
+
+Request Parameters:
+Parameter	Description
+* project_id	(required) Project ID
+* group_id	(required) New group ID
+projectRename
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectRename",
+    "project_id":448,
+    "name":"New project name"
+}
+Response example:
+
+{
+    "success": true,
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Project rename
+
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+name	(required) New project name
+projectPasteManual
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectPasteManual",
+    "project_id":448
+}
+Response example:
+
+{
+    "success": true,
+    "parsed_schedule_id": 398445
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Manual project parsing
+
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+projectsSettings
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectsSettings"
+}
+Response example:
+
+{
+    "sort_statistic": "reverse",
+    "show_chart": "1",
+    "display_number": "1",
+    "show_link": "1",
+    "display_average": "domain",
+    "backlight_url": "yes",
+    "display_statistic_numbers": "1"
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Receive all settings of all user projects
+
+Response Parameters:
+Response parameters: alias settings are the keys of the transferring array, and the elements are the settings values.
+
+projectsSettingsChange
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectsSettingsChange",
+    "setting":"show_chart",
+    "value":"0"
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change settings for all user projects
+
+Request Parameters:
+Parameter	Description
+setting	(required) alias (name) of the setting
+value	(required) new setting value
+projectsSettingValues
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectsSettingValues",
+    "setting":"show_chart"
+}
+Response example:
+
+{
+    "0": "Not Show",
+    "1": "Show"
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Receive possible settings values from all user projects
+
+Request Parameters:
+Parameter	Description
+setting	(required) alias setting
+Response Parameters:
+Response parameters: possible values are the keys of the transferring array, and the elements are their names
+
+groups
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"groups"
+}
+Response example:
+
+{
+    "items": [
+        {
+            "id": 56,
+            "name": "Group 1",
+            "projectscount": 1
+        },
+        {
+            "id": 43,
+            "name": "Bad projects",
+            "projectscount": 9
+        },
+        ...
+    ],
+    "totalCount": 11,
+    "page": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+List of all user projects groups
+
+Request Parameters:
+Parameter	Description
+page	0 by default
+pageSize	20 by default, no more than 20
+Response Parameters:
+Parameter	Description
+items	user groups array
+items.name	group name
+items.projectscount	number of projects per group
+totalCount	total number of groups
+page	current page
+groupAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"groupAdd",
+    "group":"New group"
+}
+Response example:
+
+{
+    "success": true,
+    "id": 73
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Adding a group
+
+Request Parameters:
+Parameter	Description
+group	(required) name of a new group
+Response Parameters:
+Parameter	Description
+id	new group ID
+groupDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"groupDelete",
+    "groupId":73
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Deleting a group
+
+Request Parameters:
+Parameter	Description
+groupId	(required) group ID
+groupUpdate
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"groupUpdate",
+    "groupId":73,
+    "groupName":"New group name"
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Updating the group name
+
+Request Parameters:
+Parameter	Description
+groupId	(required) group ID
+groupName	(required) group new name
+limits
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"limits"
+}
+Response example:
+
+{
+    "limits": {
+        "project": {
+            "value": 10000000,
+            "title": "Projects",
+            "currentValue": 99
+        }
+    },
+    "projectLimits": {
+        "search_engine": {
+            "value": 20,
+            "title": "Search engines/project",
+            "projectValues": {
+                "2": 2,
+                ...
+            }
+        },
+        "keyword": {
+            "value": 10000000,
+            "title": "Keywords/project",
+            "projectValues": {
+                "2": 250,
+                ...
+            }
+        },
+        ...
+Make sure you replace "yourApiKey" with your API token!
+
+List of all user limits
+
+Response Parameters:
+Parameter	Description
+limits	common limits array
+limits.project	“project” limit alias, it’s data in the array, where value is the limit value, currentValue is the current value for this limit
+projectLimits	projects limits array. In this array limits aliases are the keys. Value is the limit value, title - it’s title, projectValues is the current limit values for each project (for example, keyword.projectValues: {"2": 1663} means that project with ID=2 contains 250 keywords right now
+limit
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"limit",
+    "limit":"project",
+    "project_id":7
+}
+Response example:
+
+{
+     "limit": 100,
+     "currentValue": 99
+ }
+Make sure you replace "yourApiKey" with your API token!
+
+Data for each limit
+
+Request Parameters:
+Parameter	Description
+limit	(required) limit alias
+project_id	if specified, then the limit values for chosen project are displayed
+Response Parameters:
+Parameter	Description
+limit	user limit value
+currentValue	current value for chosen project
+Project Statistic
+statistic
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"statistic",
+    "project_id": 7,
+    "domain": 5,
+    "se": [858],
+    "withLinks":1,
+    "withAnchors":1,
+    "withSnippets":1
+}
+Response example:
+
+{
+    "7330": [                                   // report data from id = 7330
+        {
+            "domain": "google.com",
+            "domain_id": 5,
+            "report_completion_time": 1707500000,
+            "data": [                           // domain data for google.com
+                {
+                    "category": "Main",
+                    "category_id": 490,
+                    "data": [                   // Data from Main category
+                        {
+                            "keyword": "buy car",
+                            "key_id": 78619,
+                            "data": {           // data for the keyword "buy car"
+                                 "858": [       // search engine data
+                                    1,          // position
+                                    "https://google.com/", // Link for the position
+                                    "«<b>Buy car in google</b> - some text»", // Anchor
+                                    "Some text about something, <wbr/>another additional text <wbr/><b>", // Snippet
+                                    1           // Does it possible to check position
+                                ],
+                                ...
+                            },
+                        },
+                        ...
+                    ],
+                },
+                ...
+            ],
+        },
+    ],
+    ...
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Returns the data array of the project statistic
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+domain	(required) Domain ID
+se	ID SE or 0 if all. (By default - all search engines)
+show	KWs flag with or without positions ('position')
+start_date	Timestamp of the beginning of the interval in which the reports should be located, which should be selected for building the statistics array
+end_date	Timestamp of the end of the interval in which the reports should be located, which are selected for building the statistics array
+schedules	Line ID of reports separated by comma - if the parameter is specified, only these reports will be selected. If not - the latest reports are displayed
+category	category ID or -1 if all. (By default - all the SE)
+search	Search string by COP name
+page	for pagination by reports (default - 0). Maximum number of reports per page - 10
+top	keywords sampling only with positions above the specified value. Possible options - 3, 10, 30, 'all' (by default - 'all')
+sort	Flag for sorting keywords by certain values (by default - sorting by keyword name). Possible options - 1(A-Z - sorting by CW name), 2(1-100 - sorting by keyword highest position, from highest to lowest), 3(100-1 - sorting by keyword highest position, from lowest to highest)
+withcat	display the keywords with or without categories (0)
+keyPage	Page for keywords pagination - only works when only one domain is selected in the settings
+withLinks	Flag for displaying links in the statistics array
+withAnchors	Flag for displaying anchors in the statistics array
+withSnippets	Flag for displaying snippets in the statistics array
+externalDomain	ID for outputting statistics on a domain that is not included in the list of project domains
+Response Parameters:
+Returns the data array with keys - ids of selected schedules. Each array of one report, divided into domains, further - into categories, categories are divided into keywords, and keywords - into SE, for which the array of values - position, link, anchor, snippet and flag of the status of the SE output
+
+statisticAds
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"statisticAds",
+    "project_id": 7,
+    "key_id": 54718,
+    "se_id":14,
+    "schedule_id":123458
+}
+Response example:
+
+[
+  {
+    "domainId": 3708791,
+    "domain": "musictogether.com",
+    "anchor": "Music Together® - Music Classes for Kids",
+    "link": "",
+    "snippet": "Come sing and play in a Music Together® class this winter. The magic of music is inside all of us. We can help you &amp; your family discover it! Community Driven. Interactive Music. Language Development. Online and In-Person. Early Brain Development.",
+    "flags": {
+      "position": "top"
+    }
+  },
+    ...
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Returns the data array of the project statistic ads
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+se_id	(required) ID of SE
+schedule_id	(required) ID of report
+key_id	(required) ID of keyword
+Response Parameters:
+Returns an array of advertisement data that was displayed on the page for the corresponding report/SE/keyword
+
+statisticExport
+Request example:
+
+{
+  "token": "yourApiKey",
+  "method":"statisticExport",
+  "project_id": 7,
+  "domain": 5,
+  "se": [858],
+  "withLinks":1,
+  "withAnchors":1,
+  "withSnippets":1,
+  "exportParams": {
+    "fileType": "2",
+    "exportType": "current",
+    "separateDomains": true,
+    "includeCategory": true,
+    "includeUrl": true,
+    "includeReportSetting": true,
+    "includeSnippet": false,
+    "splitKeywords": false,
+    "keywordsPerSheet": 10000
+  }
+}
+Response example:
+
+{
+  "success": true,
+  "fileId": 1234
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Creates a file with exported data. Returns exported file ID
+
+POST query only
+Request Parameters:
+Parameter	Description
+exportParams	(required) Array of export parameters
+exportParams.fileType	(required) File type. Possible options - 1 (XLSX), 2 (CSV)
+exportParams.exportType	(required) Type of data for export. Possible options - current, all
+exportParams.separateDomains	(required) Splitting data into parts by domains/engines. Boolean
+exportParams.includeCategory	(required) Add categories to exported file. Boolean
+exportParams.includeUrl	(required) Add urls of positions to exported file. Boolean
+exportParams.includeReportSetting	(required) Add report settings to exported file. Boolean
+exportParams.includeSnippet	(required) Add snippets of positions to exported file. Boolean
+exportParams.splitKeywords	(required) Splitting data into parts by keywords. Boolean
+exportParams.keywordsPerSheet	(required) Limit of keywords per sheet if parameter splitKeywords is true
+Use the same query parameters as for the statistic method
+
+Response Parameters:
+Returns the ID of the exported file
+
+statisticExportList
+Request example:
+
+{
+  "token": "yourApiKey",
+  "method":"statisticExportList",
+  "project_id": 7,
+  "page": 1,
+  "pageSize": 20
+}
+Response example:
+
+{
+  "items": [
+    {
+      "id": 1234,
+      "createdAt": 1745413643,
+      "projectId": 123,
+      "type": 1,
+      "fileType": 2,
+      "progress": 100,
+      "fileSize": "1.82 K",
+      "completedAt": 1745413644,
+      "deleted": false,
+      "status": 2,
+      "fileExists": true,
+      "googleDrive": false
+    },
+    ...
+  ],
+  "totalCount": 24
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Returns an array of data about exported project files
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+page	0 by default
+pageSize	20 by default, no more than 20
+Response Parameters:
+Returns an array of data about exported project files
+
+statisticExportItem
+Request example:
+
+{
+  "token": "yourApiKey",
+  "method":"statisticExportItem",
+  "project_id": 12345,
+  "item_id": 123
+}
+Response example:
+
+{
+  "id": 1234,
+  "createdAt": 1745413643,
+  "projectId": 123,
+  "type": 1,
+  "fileType": 2,
+  "progress": 100,
+  "fileSize": "1.82 K",
+  "completedAt": 1745413644,
+  "deleted": false,
+  "status": 2,
+  "fileExists": true,
+  "googleDrive": false
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Returns an array of data about the exported project file by its ID
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+item_id	(required) ID of file
+Response Parameters:
+Returns an array of data about the exported project file by its ID.
+
+statisticExportDownload
+Request example:
+
+{
+  "token": "yourApiKey",
+  "method":"statisticExportDownload",
+  "project_id": 12345,
+  "item_id": 123
+}
+Response example:
+
+Content of file.
+Make sure you replace "yourApiKey" with your API token!
+
+Returns the contents of the file
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+item_id	(required) ID of file
+Response Parameters:
+Returns the contents of the file
+
+Project - Keywords
+projectKeywords
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywords",
+    "project_id":7,
+    "withColumns":1,
+    "category_id":1
+}
+Response example:
+
+{
+    "items": [
+        {
+            "key_id": 2046015,
+            "key": "some keyword",
+            "category_id": 1,
+            "columnData": {
+                "2": {
+                    "1": "https://www.google.com/maps/d/viewer?usp=sharing&mid=1gkXz6JI-kyeMa7ZHGlKBB4mIu9w",
+                    "5": "",
+                    "253": "https://www.youtube.com/playlist?list=PLC7_RzojUnJcKwuiOSyjNvuB9WkQrGlEl",
+                    "1983720": ""
+                },
+                "25": "some value"
+            }
+        },
+        ...
+    ],
+    "totalCount": 3,
+    "page": 1
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Returns the project keywords
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+page	by Default 0
+pageSize	by default 20. No more than 300
+withColumns	by default 0, if 1 - will be given to the KW with the values of all columns
+category_id	if specified - will be given only to the KW, which belong to the specified category, can be passed a number or array of numbers
+key_ids	if specified - will be given to the KW with id, which are in this array (search for KW id)
+search	search the keyword by name
+Response Parameters:
+Parameter	Description
+items	keywords array. It contains the next: key_id - KW id, key - KW, category_id - category, to which KW belongs, columnData - (optional) the data columns for this KW. In the columnData array, the columnData keys are the column id, and the elements themselves are the column values for this KW. If the column id = 2 (column is relevant to the URL), the value will be an array, where the keys are the domain id, and the elements - the relevant links.
+totalCount	is the total number of KWs for the received settings.
+page	Current page
+projectKeywordsAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsAdd",
+    "project_id":7,
+    "category_id":1,
+    "keywords":[
+        "New keyword",
+        "One more new keyword"
+    ]
+}
+Response example:
+
+{
+    "success": true,
+    "added": 2,
+    "ids": [
+        2048334,
+        2048335
+    ],
+    "exist": []
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Add the keyword to the project
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+keywords	(required) array of added KWs in the form of an array of strings, not more than 1000 KWs in the array
+category_id	If specified, all KWs are stored in the selected category, if not - in the default category
+skipFailed	If 1 is specified, they will be skipped and no error will be displayed when the CW array contains erroneous names. By default - the error is displayed
+Response Parameters:
+Parameter	Description
+added	number of added KWs
+ids	ID’s of the added KWs
+exist	an array of existing KWs in the project (if there are KWs in the list of added ones that already exist in the project)
+projectKeywordsAddWithColumns
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsAddWithColumns",
+    "project_id": 1393,
+    "skipFailed": true,
+    "items": [
+        {
+          "name": "some added keyword", // Added keyword
+          "categoryId": 4631, // category ID. If not exist, the default category is used.
+          "columns": {
+            "299": "12345", // The value 12345 is added to the column with ID = 299
+            "2": {  // The column ID of the relevant URL is the same for all projects
+              "1": "http://google.com/" // The relevant URL for the domain with ID=1 is added
+            }
+          }
+        },
+        ...
+      ]
+}
+Response example:
+
+{
+    "success": true,
+    "added": 2,
+    "ids": {
+        "some added keyword": 123456,
+        ...
+    },
+    "exist": [
+        "some exists keyword",
+        ...
+    ]
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Add the keyword to the project with columns values
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) Project ID
+items	(required) an array of added keywords as an object. Each element must have a name element
+items.name	Keyword to add
+items.categoryId	Category ID to which the keyword is added, if not specified - the keyword will be added to the default category
+items.columns	An array of column values that are added for the keyword. In order to add a column value for a keyword - a column must already be added to the project
+Response Parameters:
+Parameter	Description
+added	number of added KWs
+ids	ID’s of the added KWs
+exist	an array of existing KWs in the project (if there are KWs in the list of added ones that already exist in the project)
+projectKeywordsDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsDelete",
+    "project_id":7,
+    "keyword_ids":[
+        2048334,
+        2048335
+    ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+POST query only
+Delete the keywords in the project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+keyword_ids	(required) array of the IDs of the KWs for deletion
+projectKeywordsChangeCategory
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsChangeCategory",
+    "project_id":241,
+    "keyword_ids":[
+        2046015
+    ],
+    "category_id": 298
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change the keyword category
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+category_id	(required) Category ID
+keyword_ids	(required) KWs array - key_id from CW using projectKeywords method
+projectKeywordsColumnsEdit
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsColumnsEdit",
+    "project_id":241,
+    "keywords":[
+        {
+            "keyword_id":80509,
+            "column_id":25,
+            "value":123
+        },
+                {
+            "keyword_id":2046015,
+            "column_id":2,
+            "domain_id":4,
+            "value":"http://somedomain.com/testPage"
+        }
+    ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change the data in the keywords columns
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+keywords	(required) KWs array with column values. The presence of fields 'column_id', 'keyword_id', 'value' is required; if the column relevant to the url changes, the domain_id field is also required
+projectKeywordsRename
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsRename",
+    "project_id":7,
+    "keywords":[
+        {
+            "key_id":2046015,
+            "keyword":"New keyword"
+        }
+    ]
+}
+Response example:
+
+{
+    "success": true,
+    "renamed": {
+        "New keyword": 2048336
+    }
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change the project’s keywords names
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+keywords	(required) KWs array for renaming - it must contain key_id and keyword keys (new KW name)
+Response Parameters:
+Parameter	Description
+renamed	array of renamed KWs, where the key is the new KW name and the element is its id
+projectKeywordsDeleteAll
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsDeleteAll"
+}
+Response example:
+
+{
+    "success": true,
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+projectKeywordsPick
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectKeywordsPick",
+    "project_id": 7,
+    "key":"283",
+    "schedule_id":7267,
+    "se":39
+}
+Response example:
+
+[
+    "http://korrespondent.net/",
+    "http://news.bigmir.net/",
+    "https://www.obozrevatel.com/",
+    ...
+Make sure you replace "yourApiKey" with your API token!
+
+Gives the list of all links received for the keyword, search engine and project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+key	(required key or keys) ID of the keyword
+keys	(required key or keys) Array of keyword IDs. Max 100 keywords in array
+schedule_id	(required) report ID
+se	(required) ID of the project search engine
+withSnippet	by default false, if true - return link, anchor and snippet for every SERP position
+Project - Domains
+projectDomains
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDomains",
+    "project_id":7,
+    "type":1
+}
+Response example:
+
+{
+    "items": [
+        {
+            "rel_id": 1501,
+            "domain_id": 5,
+            "is_own": 1,
+            "domain": "google.com"
+        },
+        ...
+    ],
+    "totalCount": 2,
+    "page": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+List of all domains
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+page	default 0
+pageSize	20 by default. Not more than 100
+type	(if not specified, all domains are given) - filter by domain type - your own domain (1) or competing domain (0)
+Response Parameters:
+Parameter	Description
+items	array of domains. In it: domain_id - domain id, rel_id - domain-project communication id, is_own - domain type (1 - own domain, 0 - competitor domain), domain - domain name
+totalCount	total number of domains by the received settings
+page	Current page
+projectDomainsAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDomainsAdd",
+    "project_id":7,
+    "domains": [
+        {
+            "domain":"somedomain.com",
+            "is_own":1
+        }
+    ]
+}
+Response example:
+
+{
+    "success": true,
+    "added": {
+        "somedomain.com": 1983720
+    }
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Add project domains
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+domains	(required) array of domains to add. For each element of the array, the following fields must be specified: domain - the name of the added domain, is_own - its own domain (1) or competing domain (0)
+Response Parameters:
+Parameter	Description
+added	array of added domains, where the key is the added domain, and the element is its id
+projectDomainsDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDomainsDelete",
+    "project_id":7,
+    "domain_ids": [
+        1983720
+    ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Delete project domains
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+domain_ids	(required) array of domains to be removed
+projectDomainsChangeType
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDomainsChangeType",
+    "project_id":7,
+    "domain_ids":[
+        5
+    ],
+    "type":1
+}
+Response example:
+
+{
+    "success": true,
+    "changed_domains": {
+        "5": 1
+    }
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Change domain type
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+domain_ids	(required) Domains IDs array
+type	if specified, this type is set for all domains
+Response Parameters:
+Parameter	Description
+changed_domains	array of processed domains, where the key is the domain id, and the value is the current type (1 — own domain, 0 — competitor domain)
+projectDomainsCollect
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectDomainsCollect",
+    "project_id":7
+}
+Response example:
+
+[
+    "google.com",
+    "somedomain.com",
+    "data.net",
+    "24tv.ua",
+    "wikipedia.org",
+    "korrespondent.net",
+    "books.google.com",
+    ...
+Make sure you replace "yourApiKey" with your API token!
+
+Returns 30 most common domains from statistics
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Project - Search engines
+projectSearchEngines
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSearchEngines",
+    "project_id":7
+}
+Response example:
+
+{
+    "16": {
+        "short": "G1",
+        "name": "Google",
+        "settings": "(www.google.com, Auto, English, United Kingdom, Southwark, London, UK)",
+        "settingsArray": {
+            "google_domains": {
+                "display": "www.google.com",
+                "value": "www.google.com",
+                "id": 1
+            },
+            ...
+        },
+        "se_id": 1
+    },
+    ...
+Make sure you replace "yourApiKey" with your API token!
+
+Getting all active PS project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+An array is offered, where the keys are the id of the PS project. In each array: short is the abbreviated name of the PS, name is the name of the PS, settings is the set of the current settings by the line, settingsArray is the array of the current values ​​of the settings of the PS, se_id is the global search engine id in SpySerp
+
+projectSearchEngine
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSearchEngines",
+    "project_id":7,
+    "project_se_id":16
+}
+Response example:
+
+{
+    "short": "G1",
+    "name": "Google",
+    "settings": "(---Seattle)",
+    "settingsArray": {
+        "google_regions": {
+            "display": "---Seattle",
+            "value": "16",
+            "id": 592
+        }
+    },
+    "project_se_id": 3
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Receiving SE project by its ID
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+project_se_id	(required) ID of the SE project
+Response Parameters:
+Parameter	Description
+short	abbreviation of the search engine
+name	name of the search engine
+settings	set of current settings by line
+settingsArray	array of current values ​​of SE settings
+se_id	global search engine id in SpySerp
+projectSearchEnginesAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSearchEnginesAdd",
+    "project_id": 7,
+    "engines":[
+        {
+            "se_id":1,
+            "settings":{
+                "google_langs":"lang_en",
+                    "google_location":"",
+                    "google_domains":"www.google.com",
+                    "google_hl":"en",
+                    "google_country_codes":"US"
+            }
+        }
+    ]
+}
+Response example:
+
+{
+    "success": true,
+    "added": [
+        855
+    ]
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Add search engine to the project
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+engines	array of the added PS, in each element of the array there should be a se_id element ID of the SE being added, and settings - an array of settings (for example "google_langs": "lang_en"). You can use method searchEnginesLoadSettings to get available values for every setting. You can send google_place_id in settings array to set google location by placeId for Google SE.
+Response Parameters:
+Parameter	Description
+added	array of the search engine added IDs
+projectSearchEnginesDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSearchEnginesDelete",
+    "project_id": 7,
+    "relation_id": 855
+}
+Response example:
+
+{
+    "success": true,
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Delete the SE from the project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+relation_id	(required) id of SE of the project that is being deleted
+Project - Categories
+projectCategories
+List of the project categories
+
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectCategories",
+    "project_id":7
+}
+Response example:
+
+{
+    "items": [
+        {
+            "id": 490,
+            "title": "Main",
+            "keysCount": 8,
+            "default": 1,
+            "keyPagesCount": 1
+        },
+        ...
+    ],
+    "totalCount": 2,
+    "page": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+page	Page
+pageSize	Page size. Not more than 100
+Response Parameters:
+Parameter	Description
+items	
+items.id	category ID
+items.title	category name
+items.keysCount	number of keywords in this category
+items.default	whether this category is the default category (1 - yes, 0 - no)
+totalCount	total number of categories
+page	current page
+projectCategoriesAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectCategoriesAdd",
+    "project_id":7,
+    "categories":[
+        "New category"
+    ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Adding categories to the project
+
+POST query only
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+categories	(required) array of new category names
+projectCategoriesDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectCategoriesDelete",
+    "project_id":7,
+    "category_ids":[
+        486
+    ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Deleting a project category
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+category_ids	(required) array id categories for deletion
+projectCategoriesEdit
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectCategoriesEdit",
+    "project_id": 7,
+    "category_id": 190,
+    "category": "Edited second test category"
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Editing the project category name
+
+Request Parameters:
+Parameter	Description
+* project_id	(required) ID
+* category_id	(required) ID of the category being edited
+* category	(required) new category name
+* default_category	1 or 0
+Project - auto schedules
+projectAutoSchedules
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectAutoSchedules",
+    "project_id":7
+}
+Response example:
+
+{
+    "success": true,
+    "items": [
+        {
+            "id": 123456,
+            "days": [
+                1,
+                7
+            ],
+            "time": "15:00",
+            "enabled": true
+        }
+    ]
+}
+Make sure you replace "yourApiKey" with your API token!
+
+List of all project auto schedules
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Parameter	Description
+items	Array of settings of project auto schedule. Every array element have fields: ids, days - array of week days when project auto start will run - from 1 to 7 (Monday - Sunday), time - time when project auto start will run (with the user time zone, send format "HH:mm", as minutes may be only "00" or "30", in hours - from "00" to "23"), enabled (true/false) - flag whether the schedule is activated (if false - the project will not start according to this schedule)
+projectAutoSchedulesAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectAutoSchedulesAdd",
+    "project_id":123456,
+    "items": [
+        {
+          "days":[1,2,3,4,5,6],
+          "time":"15:30", 
+          "enabled": true
+        },
+        ...
+      ]
+}
+Response example:
+
+{
+    "success": true,
+    "items": [
+        {
+            "id": 123456
+        },
+        ...
+    ]
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Adding project auto schedules
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+items	Array of settings of new project auto schedule. Every array element must have fields: days - array of week days when project auto start will run - from 1 to 7 (Monday - Sunday), time - time when project auto start will run (with the user time zone, send format "HH:mm", as minutes may be only "00" or "30", in hours - from "00" to "23"), enabled (true/false) - flag whether the schedule is activated (if false - the project will not start according to this schedule)
+Response Parameters:
+Parameter	Description
+items	Array of ids of Array of added project schedules. In each element: id - schedule ID
+projectAutoSchedulesUpdate
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectAutoSchedulesUpdate",
+    "project_id":12345,
+    "items": [
+        {
+          "id":12345,
+          "time":"10:00"
+        },
+        ...
+      ]
+}
+Response example:
+
+{
+    "success": true,
+    "items": [
+        {
+            "id": 12345,
+            "days": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "time": "10:00",
+            "enabled": true
+        },
+        ...
+    ]
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Update project auto schedules
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+items	Array of settings for update project auto schedule. Every array element must have id field and may have fields: days - array of week days when project auto start will run - from 1 to 7 (Monday - Sunday), time - time when project auto start will run (with the user time zone, send format "HH:mm", as minutes may be only "00" or "30", in hours - from "00" to "23"), enabled (true/false) - flag whether the schedule is activated (if false - the project will not start according to this schedule)
+Response Parameters:
+Parameter	Description
+items	Array of all settings of updated project auto schedules. Every element has fields: id, days, time and enabled
+projectAutoSchedulesRemove
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectAutoSchedulesRemove",
+    "project_id":12345,
+    "items": [
+        {
+          "id":12345
+        },
+        ...
+      ]
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Remove project auto schedules
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+items	Array of auto schedule ids for remove
+Project - Columns
+projectColumns
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumns",
+    "project_id":7,
+    "withFilled":1
+}
+Response example:
+
+{
+    "items": [
+        {
+            "id": 245,
+            "type_id": 0,
+            "description": "Some column",
+            "hide": false,
+            "region": false,
+            "freq_type": false,
+            "conformity": false,
+            "deleted": false,
+            "column_type": "common",
+            "filled": 0
+        },
+        ...
+        ],
+    "totalCount": 2,
+    "page": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+List of all project columns
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+page	0 by default
+pageSize	20 by default. Not more than 100
+withFilled	additionally returns for each column a field filled with the number of filled column values for all project keywords
+Response Parameters:
+items | Array of project columns. In each array: id - column ID, type_id - column type (0 - number, 1 - row. Used when sorting statistics by column), description - column name, hide - flag, whether the column is hidden on the statistics page, region - id region, if column is Yandex frequency, freq_type - 1, if frequency column, conformity - type of compliance, if Yandex frequency column, deleted - flag, whether column is deleted, column_type - column type, filled - (optional) number of keywords from filled values for this column totalCount | total columns page page | current page
+
+projectColumnsAdd
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsAdd",
+    "project_id":7,
+    "column": {
+        "description": "Some column",
+        "type_id":0
+    }
+}
+Response example:
+
+{
+    "success": true,
+    "columnId": 245
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Adding a column to the project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+column	(required) If a number is passed in the field, then a column with the given ID among the available columns to be added is searched for - get separately by the projectColumnsAvailable method. If an array is transferred to the field, a new column is added, filled with parameters from the array. In this case, mandatory elements of the array are 'description', 'type_id' (column type. 0 - numeric, 1 - lowercase)
+Response Parameters:
+Parameter	Description
+columnId	id of the column being added
+projectColumnsAvailable
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsAvailable",
+    "project_id":7
+}
+Response example:
+
+[
+    {
+        "id": 2,
+        "description": "Relevant URL",
+        "type": "Inbuilt column"
+    },
+    {
+        "id": 169,
+        "description": "Some description",
+        "type": "Own column"
+    },
+    ...
+Make sure you replace "yourApiKey" with your API token!
+
+List of all project columns available for adding (built-in columns, or those columns that exist in other user projects)
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Array of existing columns to add.
+
+Parameter	Description
+description	Column description
+type	column type ("Inbuilt column" is a built-in column that can be added by any user, "Own column" is a column that exists in one of the other user projects)
+projectColumnsDelete
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsDelete",
+    "project_id":7,
+    "column_id":2
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Delete columns from the project
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+column_id	(required) id of the column being deleted
+projectColumnsEdit
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsEdit",
+    "project_id":7,
+    "column_id":25,
+    "column": {
+        "description": "Some column",
+        "type_id":0
+    }
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Editing a personal column (you cannot edit the column of a relevant URL or frequency)
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+column_id	(required) Column ID
+column	(required) an array is passed to the field. The required elements of the array are 'description', 'type_id' (column type. 0 - numeric, 1 - lowercase)
+projectColumnsHide
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsHide",
+    "project_id":7,
+    "column_id":78
+}
+Response example:
+
+{
+    "success": true,
+    "hide": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Hiding a column on the statistics page. Returns hide - current value is true / false
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+column_id	(required) Column Id
+Response Parameters:
+Возвращает hide - current value is true / false
+
+projectColumnsAutocollect
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectColumnsAutocollect",
+    "project_id":7,
+    "column_id":78
+}
+Response example:
+
+{
+    "success": true,
+    "msg": "Task added successfully"
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Automatic collection of links for the column relevant url from existing statistics, or automatic start of tasks for collecting values for frequency columns (if the transferred column_id belongs to the frequency column)
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+column_id	(required) Column ID
+Project - Other Methods
+projectSchedules
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSchedules",
+    "project_id":7, 
+    "start_time": 1729771200,
+    "end_time": 1729857600,
+    "page": 2
+}
+Response example:
+
+{
+    "items": [
+      {
+        "id": 123456,
+        "time_created": 1729771300,
+        "time_started": 1729771400,
+        "time_completed": 1729771500,
+        "time_parse": {
+          "parsing": 123,
+          "saving": 12
+        },
+        "status": 4,
+        "type": 1,
+        "progress": 100,
+        "data": {
+          "up": {
+            "0": {
+              "12345": 1507,
+              ...
+            },
+            ...
+        },
+        "parseData": {
+          "good": 123,
+          "total": 124
+        }
+    ],
+    "totalCount": 2,
+    "page": 2
+}
+Make sure you replace "yourApiKey" with your API token!
+
+List of project reports. From new to old
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+page	0 by default
+pageSize	20 by default. Not more than 100
+Response Parameters:
+Parameter	Description
+items	array of reports. time_created - timestamp of report creation, time_started- timestamp of report launch, time_completed - timestamp of report parsing completed, time_parse - array with report parsing time, status - report status (4 - completed successfully), type - report launch type - manually or automatically , progress is the indicator of report completion in percent, data is a snapshot of report statistics, parseData is the number of parsed KSs.
+totalCount	total number of columns
+page	current page
+projectSchedule
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSchedule",
+    "project_id":7,
+    "schedule_id":6975
+}
+Response example:
+
+{
+    "id": 6926,
+    "time_created": 1508740200,
+    "time_started": 1508740201,
+    "time_completed": 1508741392,
+    "time_parse": {
+        "parsing": 1189,
+        "saving": 2.0652
+    },
+    "status": 4,
+    "type": 1,
+    "progress": 100,
+    "data": {
+        "up": {
+            "253": 50
+        },
+        ...
+    },
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Data of the exact project report
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Parameter	Description
+id	ID отчета
+time_created	report creation timestamp,
+time_started	report launch timestamp,
+time_completed	report parsing completion timestamp,
+time_parse	array with report parsing time,
+status	report status (4 completed successfully),
+type	type of report start - manually or automatically,
+progress	report completion rate in percent,
+data	snapshot of report statistics,
+parseData	quantities parsed by the keywords.
+projectLastSchedule
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectLastSchedule",
+    "project_id":7,
+    "schedule_id":6975
+}
+Response example:
+
+{
+    "id": 6926,
+    "time_created": 1508740200,
+    "time_started": 1508740201,
+    "time_completed": 1508741392,
+    "time_parse": {
+        "parsing": 1189,
+        "saving": 2.0652
+    },
+    "status": 4,
+    "type": 1,
+    "progress": 100,
+    "data": {
+        "up": {
+            "253": 50
+        },
+        ...
+    },
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Data of the last successfull project report
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Parameter	Description
+id	ID отчета
+time_created	report creation timestamp,
+time_started	report launch timestamp,
+time_completed	report parsing completion timestamp,
+time_parse	array with report parsing time,
+status	report status (4 completed successfully),
+type	type of report start - manually or automatically,
+progress	report completion rate in percent,
+data	snapshot of report statistics,
+parseData	quantities parsed by the keywords.
+projectActiveSchedule
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectActiveSchedule",
+    "project_id":7
+}
+Response example:
+
+{
+    "id": 6990,
+    "time_created": 1508942051,
+    "progress": 0
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Getting the active report (what is being parsed at the moment)
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Parameter	Description
+id	id of the report that is being processed
+time_created	report creation timestamp
+progress	parsing percentage
+projectActiveTasks
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectActiveTasks",
+    "project_id":7
+}
+Response example:
+
+[
+    {
+        "id": 1748,
+        "time_created": 1508942611,
+        "progress": 0,
+        "task_config": {
+            "region": "213",
+            "category": -1,
+            "columnId": 112,
+            "freq_type": "1",
+            "conformity": "\"[Freq]\"",
+            "skipOnExist": true
+        }
+    },
+Make sure you replace "yourApiKey" with your API token!
+
+Getting active tasks (for frequencies)
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+Response Parameters:
+Parameter	Description
+id	ID of the report that is being processed
+time_created	report creation timestamp
+progress	parsing percentage
+task_config	settings task before launch
+projectSaveSetting
+Request example:
+
+{
+    "token": "yourApiKey",
+    "method":"projectSaveSetting",
+    "project_id": 21,
+    "setting":"parseAnchor",
+    "value":0
+}
+Response example:
+
+{
+    "success": true
+}
+Make sure you replace "yourApiKey" with your API token!
+
+Save individual project settings
+
+Request Parameters:
+Parameter	Description
+project_id	(required) ID
+setting	(required) alias settings
+value	(required) new setting value
