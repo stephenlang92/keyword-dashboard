@@ -15,36 +15,6 @@ A personal dashboard for tracking keyword rankings over time. Built with vanilla
 - **Vite** — dev server and bundler
 - **HTML/CSS**
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js v18+
-- npm
-
-### Installation
-
-```bash
-git clone https://github.com/stephenlang92/keyword-dashboard.git
-cd keyword-dashboard
-npm install
-```
-
-### Run locally
-
-```bash
-npm run dev
-```
-
-Open `http://localhost:5173` in your browser.
-
-### Build for production
-
-```bash
-npm run build
-```
-
-Output goes to the `dist/` folder.
 
 ## Project Structure
 
